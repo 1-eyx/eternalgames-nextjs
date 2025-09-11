@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const GiscusComments = () => {
-    useTheme();
+    const { resolvedTheme } = useTheme();
     const { status } = useSession();
     const [mounted, setMounted] = useState(false);
 
@@ -14,11 +14,15 @@ const GiscusComments = () => {
         setMounted(true);
     }, []);
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eternalgames-nextjs.vercel.app';
+    
     // =================================================================
-    //  THE FINAL FIX: We are hardcoding the public Vercel URL.
-    //  This bypasses all environment variable issues and is guaranteed to work.
+    //  THE DEFINITIVE FIX: We check the theme and give Giscus the
+    //  explicit URL for the correct stylesheet. No more race conditions.
     // =================================================================
-    const giscusTheme = 'https://eternalgames-nextjs.vercel.app/css/giscus-theme.css';
+    const giscusTheme = resolvedTheme === 'dark' 
+        ? `${siteUrl}/css/giscus-dark.css` 
+        : `${siteUrl}/css/giscus-light.css`;
 
     const repo = process.env.NEXT_PUBLIC_GISCUS_REPO;
     const repoId = process.env.NEXT_PUBLIC_GISCUS_REPO_ID;
@@ -26,7 +30,6 @@ const GiscusComments = () => {
     const categoryId = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID;
 
     if (!repo || !repoId || !category || !categoryId) {
-        console.error("Giscus environment variables are not configured in .env.local");
         return <p>Comment system is not configured.</p>;
     }
 
@@ -34,6 +37,16 @@ const GiscusComments = () => {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
     };
+    
+    // We must delay rendering Giscus until `mounted` is true, so that `resolvedTheme` is accurate.
+    if (!mounted) {
+        return (
+            <div className="comments-section">
+                <h2 className="section-title">Community Discussion</h2>
+                <div className="comment-signin-prompt" style={{ height: '200px', background: 'var(--bg-secondary)', animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></div>
+            </div>
+        );
+    }
     
     return (
         <motion.div
@@ -44,12 +57,7 @@ const GiscusComments = () => {
         >
              <h2 className="section-title">Community Discussion</h2>
              
-             {(!mounted || status === 'loading') && (
-                <div className="comment-signin-prompt" style={{ height: '200px', background: 'var(--bg-secondary)', animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>
-                </div>
-             )}
-
-             {mounted && status === 'unauthenticated' && (
+             {status === 'unauthenticated' && (
                 <div className="comment-signin-prompt">
                     <h3>Join the Conversation</h3>
                     <p>Sign in with your GitHub account to leave a comment.</p>
@@ -59,8 +67,9 @@ const GiscusComments = () => {
                 </div>
              )}
 
-             {mounted && status === 'authenticated' && (
+             {status === 'authenticated' && (
                 <Giscus
+                    key={resolvedTheme} // Use key to force re-render on theme change
                     id="comments"
                     repo={repo as `${string}/${string}`}
                     repoId={repoId}
@@ -78,4 +87,5 @@ const GiscusComments = () => {
         </motion.div>
     );
 };
+
 export default GiscusComments;

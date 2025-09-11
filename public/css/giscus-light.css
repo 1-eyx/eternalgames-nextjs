@@ -1,0 +1,35 @@
+/* EternalGames - Giscus LIGHT Theme */
+:root {
+  --color-fg-default: #111827;
+  --color-fg-muted: #6B7280;
+  --color-canvas-default: #FFFFFF;
+  --color-canvas-inset: #F3F4F6;
+  --color-border-default: #E5E7EB;
+  --color-accent-fg: #2563EB;
+  --color-primer-border-radius: 8px;
+  --giscus-font-family: 'Inter', sans-serif;
+}
+
+/* --- ETERNALGAMES SHARED CUSTOMIZATIONS --- */
+.gsc-branding { display: none !important; }
+.gsc-comment-box-primary .gsc-comment-box-submit {
+  background-color: var(--color-accent-fg) !important;
+  color: #0A0B0F !important;
+  font-family: var(--giscus-font-family) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  border: none !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+  transition: opacity 0.2s ease !important;
+}
+.gsc-comment-box-primary .gsc-comment-box-submit:hover { opacity: 0.85; }
+.gsc-input textarea:focus, .gsc-input input:focus {
+  border-color: var(--color-accent-fg) !important;
+  box-shadow: 0 0 0 1px var(--color-accent-fg) !important;
+}
+.gsc-reactions-button:hover, .gsc-reactions-button[aria-pressed="true"] {
+  border-color: var(--color-accent-fg) !important;
+}
+.gsc-comment-body a { color: var(--color-accent-fg) !important; }
+.gsc-input { font-family: var(--giscus-font-family) !important; }
