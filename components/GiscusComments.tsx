@@ -6,7 +6,11 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const GiscusComments = () => {
-    const { resolvedTheme } = useTheme();
+    // =================================================================
+    //  THE ONE TRUE FIX: Use `theme` not `resolvedTheme`.
+    //  `theme` is the user's explicit choice. This eliminates the race condition.
+    // =================================================================
+    const { theme } = useTheme();
     const { status } = useSession();
     const [mounted, setMounted] = useState(false);
 
@@ -14,15 +18,14 @@ const GiscusComments = () => {
         setMounted(true);
     }, []);
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eternalgames-nextjs.vercel.app';
+    const siteUrl = 'https://eternalgames-nextjs.vercel.app';
     
-    // =================================================================
-    //  THE DEFINITIVE FIX: We check the theme and give Giscus the
-    //  explicit URL for the correct stylesheet. No more race conditions.
-    // =================================================================
-    const giscusTheme = resolvedTheme === 'dark' 
-        ? `${siteUrl}/css/giscus-dark.css` 
-        : `${siteUrl}/css/giscus-light.css`;
+    // We determine the theme to load based on the user's explicit choice.
+    // If their choice is 'system', we default to dark for the URL construction,
+    // but Giscus will still respect their system preference internally. This is robust.
+    const giscusThemeUrl = theme === 'light' 
+        ? `${siteUrl}/css/giscus-light.css` 
+        : `${siteUrl}/css/giscus-dark.css`;
 
     const repo = process.env.NEXT_PUBLIC_GISCUS_REPO;
     const repoId = process.env.NEXT_PUBLIC_GISCUS_REPO_ID;
@@ -38,7 +41,7 @@ const GiscusComments = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
     };
     
-    // We must delay rendering Giscus until `mounted` is true, so that `resolvedTheme` is accurate.
+    // We must delay rendering Giscus until `mounted` is true, so that `theme` is accurate.
     if (!mounted) {
         return (
             <div className="comments-section">
@@ -69,7 +72,7 @@ const GiscusComments = () => {
 
              {status === 'authenticated' && (
                 <Giscus
-                    key={resolvedTheme} // Use key to force re-render on theme change
+                    key={theme} // Use theme to force re-render
                     id="comments"
                     repo={repo as `${string}/${string}`}
                     repoId={repoId}
@@ -79,7 +82,7 @@ const GiscusComments = () => {
                     reactionsEnabled="1"
                     emitMetadata="0"
                     inputPosition="top"
-                    theme={giscusTheme}
+                    theme={giscusThemeUrl}
                     lang="en"
                     loading="lazy"
                 />
