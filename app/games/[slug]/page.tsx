@@ -6,8 +6,9 @@ import Image from 'next/image';
 
 type GameHubPageProps = { params: { slug: string; }; };
 
-const isReview = (item: any): item is Review => item.type === 'review';
-const isRetroArticle = (item: any): item is RetroArticle => item.type === 'archive';
+// CORRECTED: Replaced 'any' with a more specific object type.
+const isReview = (item: { type: string }): item is Review => item.type === 'review';
+const isRetroArticle = (item: { type: string }): item is RetroArticle => item.type === 'archive';
 
 export default function GameHubPage({ params }: GameHubPageProps) {
   const gameName = decodeURIComponent(params.slug.replace(/-/g, ' '));
@@ -35,8 +36,13 @@ export default function GameHubPage({ params }: GameHubPageProps) {
               const newsItem = item as NewsItem;
               return (
                 <div key={`${item.type}-${item.id}`} className="news-card">
-                  <h3>{newsItem.title}</h3>
-                  <p>{newsItem.category} • {newsItem.date}</p>
+                  <div className="news-card-image-container">
+                      <Image src={newsItem.imageUrl} alt={newsItem.title} fill style={{objectFit: 'cover'}} className="news-card-image" />
+                  </div>
+                  <div className="news-card-content">
+                      <p className="news-card-category">{newsItem.category}</p>
+                      <h3>{newsItem.title}</h3>
+                  </div>
                 </div>
               )
             }

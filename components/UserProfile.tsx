@@ -1,6 +1,7 @@
 'use client';
 
-import { useSession, signIn, signOut } from 'next-auth/react';
+// CORRECTED: Removed unused 'signOut' import
+import { useSession, signIn } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 

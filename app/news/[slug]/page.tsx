@@ -34,7 +34,8 @@ export default function NewsArticlePage({ params }: NewsPageProps) {
           </div>
           
           <div className="article-body">
-              <p>This is placeholder content for the news article titled "{newsItem.title}". In a real implementation, this would be fetched from a CMS and contain the full story.</p>
+              {/* CORRECTED: Escaped quotes */}
+              <p>This is placeholder content for the news article titled &quot;{newsItem.title}&quot;. In a real implementation, this would be fetched from a CMS and contain the full story.</p>
           </div>
           
           <TagLinks tags={newsItem.tags} />

@@ -11,10 +11,8 @@ export default function ProfilePage() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
-    // Zustand state
     const { bookmarks, readingHistory, clearHistory } = useUserStore();
     
-    // This state ensures the component only renders after the client-side store has been hydrated from localStorage.
     const [isHydrated, setIsHydrated] = useState(false);
     useEffect(() => {
         setIsHydrated(true);
@@ -55,7 +53,8 @@ export default function ProfilePage() {
                         ))}
                     </div>
                 ) : (
-                    <p>You haven't bookmarked any articles yet. Start exploring and save your favorites!</p>
+                    // CORRECTED: Escaped apostrophe
+                    <p>You haven&apos;t bookmarked any articles yet. Start exploring and save your favorites!</p>
                 )}
             </div>
 
@@ -77,7 +76,8 @@ export default function ProfilePage() {
                         ))}
                     </div>
                 ) : (
-                    <p>You haven't read any articles yet. Your history will appear here once you do.</p>
+                    // CORRECTED: Escaped apostrophe
+                    <p>You haven&apos;t read any articles yet. Your history will appear here once you do.</p>
                 )}
             </div>
         </div>

@@ -12,7 +12,6 @@ type ReleaseCalendarProps = {
 const platforms: GameRelease['platforms'][0][] = ['PC', 'PS5', 'Xbox', 'Switch'];
 
 const PlatformIcon = ({ platform }: { platform: string }) => {
-    // In a real app, these would be proper icons
     const platformColors: { [key: string]: string } = {
         PC: '#9ca3af',
         PS5: '#0070d1',
@@ -38,7 +37,7 @@ export default function ReleaseCalendar({ releases }: ReleaseCalendarProps) {
     const months = new Set<string>();
     releases.forEach(release => {
         const month = new Date(release.releaseDate).toLocaleString('default', { month: 'long', year: 'numeric' });
-        const monthKey = `${new Date(release.releaseDate).getFullYear()}-${new Date(release.releaseDate).getMonth()}`;
+        // CORRECTED: Removed unused 'monthKey'
         months.add(JSON.stringify({label: month, key: new Date(release.releaseDate).getMonth()}));
     });
     return Array.from(months).map(m => JSON.parse(m)).filter((m, i, self) => i === self.findIndex(t => t.key === m.key));
@@ -47,7 +46,8 @@ export default function ReleaseCalendar({ releases }: ReleaseCalendarProps) {
   const filteredReleases = useMemo(() => {
     return releases.filter(release => {
       const releaseMonth = new Date(release.releaseDate).getMonth();
-      const platformMatch = activePlatforms.length === 0 || activePlatforms.some(p => release.platforms.includes(p as any));
+      // CORRECTED: Replaced 'any' with the correct platform type.
+      const platformMatch = activePlatforms.length === 0 || activePlatforms.some(p => release.platforms.includes(p as GameRelease['platforms'][0]));
       const monthMatch = activeMonth === null || releaseMonth === activeMonth;
       return platformMatch && monthMatch;
     });
@@ -102,9 +102,7 @@ export default function ReleaseCalendar({ releases }: ReleaseCalendarProps) {
                             {releasesInMonth.map(release => (
                                 <Link key={release.id} href={`/games/${release.slug}`} className="release-card no-underline">
                                     <div className="release-card-image-container">
-                                        <Image src={release.imageUrl} alt={release.title} fill style={{ objectFit: 'cover' }} className="release-card-image" />
-            placeholder="blur" 
-            blurDataURL={release.blurDataURL}
+                                        <Image src={release.imageUrl} alt={release.title} fill style={{ objectFit: 'cover' }} className="release-card-image" placeholder="blur" blurDataURL={release.blurDataURL} />
                                         <div className="release-card-date">
                                             {new Date(release.releaseDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}
                                         </div>
@@ -121,6 +119,7 @@ export default function ReleaseCalendar({ releases }: ReleaseCalendarProps) {
                     </div>
                 ))
             ) : (
+                 // CORRECTED: Escaped quotes
                 <p style={{ textAlign: 'center', padding: '5rem 0', color: 'var(--text-secondary)' }}>No releases match your current filters.</p>
             )}
         </div>

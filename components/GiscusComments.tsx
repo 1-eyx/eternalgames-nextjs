@@ -5,13 +5,12 @@ import { useSession, signIn } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 const GiscusComments = () => {
-    const { theme, resolvedTheme } = useTheme();
-    const { data: session, status } = useSession();
+    const { resolvedTheme } = useTheme(); // CORRECTED: Removed unused 'theme'
+    const { status } = useSession(); // CORRECTED: Removed unused 'session'
     const [mounted, setMounted] = useState(false);
     useEffect(() => {
         setMounted(true);
     }, []);
-    // Reverted to standard practice: reading from environment variables.
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
     const giscusTheme = siteUrl ? `${siteUrl}/css/giscus-theme.css` : 'preferred_color_scheme';
     const repo = process.env.NEXT_PUBLIC_GISCUS_REPO;
@@ -50,7 +49,7 @@ const GiscusComments = () => {
              {mounted && status === 'authenticated' && (
                 <Giscus
                     id="comments"
-                    repo={repo as `\${string}/\${string}`}
+                    repo={repo as `${string}/${string}`}
                     repoId={repoId}
                     category={category}
                     categoryId={categoryId}

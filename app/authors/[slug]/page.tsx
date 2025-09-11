@@ -1,12 +1,13 @@
 import { allContent } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import ArticleCard from '@/components/ArticleCard';
-import { Review, RetroArticle, NewsItem } from '@/lib/data';
+import { Review, RetroArticle } from '@/lib/data';
 
 type AuthorPageProps = { params: { slug: string; }; };
 
-const isReview = (item: any): item is Review => item.type === 'review';
-const isRetroArticle = (item: any): item is RetroArticle => item.type === 'archive';
+// CORRECTED: Replaced 'any' with a more specific object type to satisfy the linter.
+const isReview = (item: { type: string }): item is Review => item.type === 'review';
+const isRetroArticle = (item: { type: string }): item is RetroArticle => item.type === 'archive';
 
 export default function AuthorPage({ params }: AuthorPageProps) {
   const authorSlug = decodeURIComponent(params.slug);
@@ -23,7 +24,6 @@ export default function AuthorPage({ params }: AuthorPageProps) {
   return (
     <div className="container page-container">
       <div className="author-header">
-        {/* In a real app, you'd have an author image here */}
         <div className="author-avatar-placeholder">
           {authorName?.charAt(0)}
         </div>
@@ -39,7 +39,7 @@ export default function AuthorPage({ params }: AuthorPageProps) {
             if (isReview(item) || isRetroArticle(item)) {
                 return <ArticleCard key={`${item.type}-${item.id}`} article={item} isRetro={isRetroArticle(item)} />;
             }
-            return null; // We'll only show reviews and articles on author pages for now
+            return null;
         })}
       </div>
     </div>

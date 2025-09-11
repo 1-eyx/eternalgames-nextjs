@@ -1,13 +1,14 @@
 import { allContent } from '@/lib/data';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import ArticleCard from '@/components/ArticleCard';
 import { Review, RetroArticle, NewsItem } from '@/lib/data';
+import Image from 'next/image';
 
 type TagPageProps = { params: { tag: string; }; };
 
-const isReview = (item: any): item is Review => item.type === 'review';
-const isRetroArticle = (item: any): item is RetroArticle => item.type === 'archive';
+// CORRECTED: Replaced 'any' with a more specific object type.
+const isReview = (item: { type: string }): item is Review => item.type === 'review';
+const isRetroArticle = (item: { type: string }): item is RetroArticle => item.type === 'archive';
 
 export default function TagPage({ params }: TagPageProps) {
   const tagName = decodeURIComponent(params.tag);
@@ -19,12 +20,12 @@ export default function TagPage({ params }: TagPageProps) {
     notFound();
   }
 
-  // Capitalize the first letter for the title
   const displayTagName = tagName.charAt(0).toUpperCase() + tagName.slice(1);
 
   return (
     <div className="container page-container">
-      <h1 className="page-title">Content tagged with "{displayTagName}"</h1>
+      {/* CORRECTED: Escaped quotes */}
+      <h1 className="page-title">Content tagged with &quot;{displayTagName}&quot;</h1>
       <div className="content-grid">
         {taggedContent.map(item => {
             if (isReview(item) || isRetroArticle(item)) {
@@ -32,7 +33,6 @@ export default function TagPage({ params }: TagPageProps) {
             }
             if (item.type === 'news') {
                 const newsItem = item as NewsItem;
-                // We need to use the full NewsCard component here
                 return (
                     <div key={`${item.type}-${item.id}`} className="news-card">
                         <div className="news-card-image-container">
