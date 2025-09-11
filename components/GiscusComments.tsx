@@ -5,14 +5,16 @@ import { useSession, signIn } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 const GiscusComments = () => {
-    const { resolvedTheme } = useTheme(); // CORRECTED: Removed unused 'theme'
-    const { status } = useSession(); // CORRECTED: Removed unused 'session'
+    // CORRECTED: 'resolvedTheme' is no longer needed since we use the custom CSS file.
+    useTheme();
+    const { status } = useSession();
     const [mounted, setMounted] = useState(false);
     useEffect(() => {
         setMounted(true);
     }, []);
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-    const giscusTheme = siteUrl ? `${siteUrl}/css/giscus-theme.css` : 'preferred_color_scheme';
+    // We now ONLY use our custom theme URL.
+    const giscusTheme = siteUrl ? `${siteUrl}/css/giscus-theme.css` : 'transparent_dark';
     const repo = process.env.NEXT_PUBLIC_GISCUS_REPO;
     const repoId = process.env.NEXT_PUBLIC_GISCUS_REPO_ID;
     const category = process.env.NEXT_PUBLIC_GISCUS_CATEGORY;
