@@ -9,7 +9,7 @@ import BookmarkButton from '@/components/BookmarkButton';
 import TagLinks from '@/components/TagLinks';
 import Link from 'next/link';
 import LogVisit from '@/components/LogVisit';
-import GiscusComments from '@/components/GiscusComments';
+import CustomComments from '@/components/comments/CustomComments';
 
 type ReviewPageProps = { params: { slug: string; }; };
 
@@ -53,7 +53,7 @@ export default function ReviewPage({ params }: ReviewPageProps) {
       </div>
 
       <div className="container" style={{ paddingBottom: '6rem' }}>
-        <GiscusComments />
+        <CustomComments slug={review.slug} />
       </div>
     </>
   );
