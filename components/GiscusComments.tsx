@@ -3,14 +3,9 @@ import Giscus from '@giscus/react';
 import { useTheme } from 'next-themes';
 import { useSession, signIn } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 
 const GiscusComments = () => {
-    // =================================================================
-    //  THE ONE TRUE FIX: Use `theme` not `resolvedTheme`.
-    //  `theme` is the user's explicit choice. This eliminates the race condition.
-    // =================================================================
-    const { theme } = useTheme();
+    const { resolvedTheme } = useTheme();
     const { status } = useSession();
     const [mounted, setMounted] = useState(false);
 
@@ -18,30 +13,12 @@ const GiscusComments = () => {
         setMounted(true);
     }, []);
 
-    const siteUrl = 'https://eternalgames-nextjs.vercel.app';
-    
-    // We determine the theme to load based on the user's explicit choice.
-    // If their choice is 'system', we default to dark for the URL construction,
-    // but Giscus will still respect their system preference internally. This is robust.
-    const giscusThemeUrl = theme === 'light' 
-        ? `${siteUrl}/css/giscus-light.css` 
-        : `${siteUrl}/css/giscus-dark.css`;
-
     const repo = process.env.NEXT_PUBLIC_GISCUS_REPO;
     const repoId = process.env.NEXT_PUBLIC_GISCUS_REPO_ID;
     const category = process.env.NEXT_PUBLIC_GISCUS_CATEGORY;
     const categoryId = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID;
 
-    if (!repo || !repoId || !category || !categoryId) {
-        return <p>Comment system is not configured.</p>;
-    }
-
-    const containerVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-    };
-    
-    // We must delay rendering Giscus until `mounted` is true, so that `theme` is accurate.
+    // We must delay rendering until the component is mounted to ensure the theme is accurate.
     if (!mounted) {
         return (
             <div className="comments-section">
@@ -50,14 +27,13 @@ const GiscusComments = () => {
             </div>
         );
     }
+
+    if (!repo || !repoId || !category || !categoryId) {
+        return <p>Comment system is not configured.</p>;
+    }
     
     return (
-        <motion.div
-            className="comments-section"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-        >
+        <div className="comments-section">
              <h2 className="section-title">Community Discussion</h2>
              
              {status === 'unauthenticated' && (
@@ -72,7 +48,6 @@ const GiscusComments = () => {
 
              {status === 'authenticated' && (
                 <Giscus
-                    key={theme} // Use theme to force re-render
                     id="comments"
                     repo={repo as `${string}/${string}`}
                     repoId={repoId}
@@ -82,12 +57,13 @@ const GiscusComments = () => {
                     reactionsEnabled="1"
                     emitMetadata="0"
                     inputPosition="top"
-                    theme={giscusThemeUrl}
+                    // Reverted to Giscus's simple, built-in theme handling. This will work.
+                    theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
                     lang="en"
                     loading="lazy"
                 />
              )}
-        </motion.div>
+        </div>
     );
 };
 
