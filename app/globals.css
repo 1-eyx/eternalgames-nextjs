@@ -714,3 +714,10 @@ img { max-width: 100%; height: auto; display: block; }
   font-size: 1.6rem;
   padding: 1.2rem 2.4rem;
 }
+
+.no-comments-yet {
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 4rem 0;
+  font-style: italic;
+}

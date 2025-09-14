@@ -38,6 +38,9 @@ export default async function CustomComments({ slug }: { slug: string }) {
                         <p className="comment-content">{comment.content}</p>
                     </div>
                 ))}
+                {comments.length === 0 && (
+                    <p className="no-comments-yet">Be the first to leave a comment.</p>
+                )}
             </div>
         </div>
     );
